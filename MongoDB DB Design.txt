@@ -1,0 +1,176 @@
+Design a database for the Zen class programme with the following collections:
+
+	users
+	codekata
+	attendance
+	topics
+	tasks
+	company_drives
+	mentors
+
+
+Sample Data `users` collection
+{
+  "name": "John Doe",
+  "email": "johndoe@example.com",
+  "codekata_problems_solved": 120,
+  "attendance": [
+    {
+      "date": {
+        "$date": "2020-10-01T00:00:00.000Z"
+      },
+      "status": "Present"
+    },
+    {
+      "date": {
+        "$date": "2020-10-02T00:00:00.000Z"
+      },
+      "status": "Absent"
+    },
+    {
+      "date": {
+        "$date": "2020-10-03T00:00:00.000Z"
+      },
+      "status": "Present"
+    }
+  ],
+  "tasks_submitted": [
+    {
+      "task_id": {
+        "$oid": "60c72b2f4f1a4b3d8c8b4561"
+      },
+      "submission_date": {
+        "$date": "2020-10-05T00:00:00.000Z"
+      },
+      "status": "Submitted"
+    },
+    {
+      "task_id": {
+        "$oid": "60c72b2f4f1a4b3d8c8b4562"
+      },
+      "submission_date": {
+        "$date": "2020-10-07T00:00:00.000Z"
+      },
+      "status": "Not Submitted"
+    }
+  ],
+  "mentor_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4563"
+  }
+}
+
+Sample Data for `codekata` Collection
+
+{
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4561"
+  },
+  "title": "Two Sum Problem",
+  "difficulty": "Easy"
+}
+
+Sample Data for `attendance` Collection
+
+{
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4570"
+  },
+  "user_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4567"
+  },
+  "date": {
+    "$date": "2020-10-01T00:00:00.000Z"
+  },
+  "status": "Present"
+}
+
+Sample Data for `topics` Collection
+
+{
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4572"
+  },
+  "title": "Introduction to JavaScript",
+  "date": {
+    "$date": "2020-10-01T00:00:00.000Z"
+  }
+}
+
+Sample Data for `tasks` Collection
+
+{
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4574"
+  },
+  "title": "JavaScript Basics Assignment",
+  "topic_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4572"
+  },
+  "due_date": {
+    "$date": "2020-10-05T00:00:00.000Z"
+  }
+}
+
+Sample Data for `company_drives` Collection
+
+{
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4576"
+  },
+  "company_name": "Google",
+  "date": {
+    "$date": "2020-10-20T00:00:00.000Z"
+  },
+  "students_appeared": [
+    {
+      "$oid": "60c72b2f4f1a4b3d8c8b4567"
+    },
+    {
+      "$oid": "60c72b2f4f1a4b3d8c8b4568"
+    }
+  ]
+}
+
+Sample Data for `mentors` Collection
+
+{
+  "_id": {
+    "$oid": "60c72b2f4f1a4b3d8c8b4578"
+  },
+  "name": "Mentor A",
+  "mentees_count": 20
+}
+
+
+Queries
+
+1) Find all the topics and tasks which are taught in the month of October.
+
+	db.topics.find({ date: { $gte: ISODate("2020-10-01T00:00:00Z"), $lt: ISODate("2020-11-01T00:00:00Z") } });
+	db.tasks.find({ due_date: { $gte: ISODate("2020-10-01T00:00:00Z"), $lt: ISODate("2020-11-01T00:00:00Z") }});
+
+2)  Find all the company drives which appeared between 15th October 2020 and 31st October 2020.
+
+
+	db.company_drives.find({ date: { $gte: ISODate("2020-10-15T00:00:00Z"), $lt: ISODate("2020-11-01T00:00:00Z") } });
+
+3) Find all the company drives and students who are appeared for the placement:
+
+	db.company_drives.find({}, { company_name: 1, students_appeared: 1 });
+
+4) Find the number of problems solved by the user in codekata:
+
+	db.users.find({}, { name: 1, codekata_problems_solved: 1 });
+
+5) Find all the mentors with mentee's count more than 15:
+
+	db.mentors.find({ mentees_count: { $gt: 15 } });
+
+6) Find the number of users who are absent and task is not submitted between 15th October 2020 and 31st October 2020.
+
+	db.users.find({
+  "attendance.date": { $gte: ISODate("2020-10-15"), $lt: ISODate("2020-11-01") },
+  "attendance.status": "Absent",
+  "tasks_submitted.date": { $gte: ISODate("2020-10-15"), $lt: ISODate("2020-11-01") },
+  "tasks_submitted.status": "Not Submitted"
+});
